@@ -1,0 +1,41 @@
+inference:
+  mamdani: {and: min, implication: min, accumulation: max, defuzzification: centroid, n_points: 601}
+  sugeno:  {and: prod, order: 1}
+
+inputs:
+  Energy:
+    unit: "%"
+    domain: [0, 100]
+    terms:
+      Low:    {type: trapezoidal, params: [0, 0, 15, 35]}
+      Medium: {type: triangular,  params: [20, 50, 80]}
+      High:   {type: trapezoidal, params: [65, 85, 100, 100]}
+  EventRate:
+    unit: "подій/хв"
+    domain: [0, 50]
+    terms:
+      Low:    {type: trapezoidal, params: [0, 0, 5, 15]}
+      Medium: {type: triangular,  params: [8, 20, 32]}
+      High:   {type: trapezoidal, params: [25, 38, 50, 50]}
+
+output:
+  SleepTime:
+    unit: "с"
+    domain: [1, 60]
+    terms:
+      VeryShort: {type: trapezoidal, params: [1, 1, 2, 8]}
+      Short:     {type: triangular,  params: [3, 10, 20]}
+      Medium:    {type: triangular,  params: [12, 25, 38]}
+      Long:      {type: triangular,  params: [30, 40, 50]}
+      VeryLong:  {type: trapezoidal, params: [42, 52, 60, 60]}
+
+rules:
+  - {if: {Energy: Low,    EventRate: Low},    then: VeryLong,  sugeno: {a: -0.15, b: -0.20, c: 57.1}}
+  - {if: {Energy: Low,    EventRate: Medium}, then: Long,      sugeno: {a: -0.15, b: -0.20, c: 45.5}}
+  - {if: {Energy: Low,    EventRate: High},   then: Medium,    sugeno: {a: -0.15, b: -0.20, c: 34.5}}
+  - {if: {Energy: Medium, EventRate: Low},    then: Long,      sugeno: {a: -0.15, b: -0.20, c: 48.1}}
+  - {if: {Energy: Medium, EventRate: Medium}, then: Medium,    sugeno: {a: -0.15, b: -0.20, c: 36.5}}
+  - {if: {Energy: Medium, EventRate: High},   then: Short,     sugeno: {a: -0.15, b: -0.20, c: 25.5}}
+  - {if: {Energy: High,   EventRate: Low},    then: Medium,    sugeno: {a: -0.15, b: -0.20, c: 39.1}}
+  - {if: {Energy: High,   EventRate: Medium}, then: Short,     sugeno: {a: -0.15, b: -0.20, c: 27.5}}
+  - {if: {Energy: High,   EventRate: High},   then: VeryShort, sugeno: {a: -0.15, b: -0.20, c: 24.5}}
